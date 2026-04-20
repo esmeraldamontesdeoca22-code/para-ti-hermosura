@@ -5,10 +5,16 @@ fetch('Img/treelove.svg')
   .then(res => res.text())
   .then(svgText => {
     const container = document.getElementById('tree-container');
-    if (!container) return;
+    if (!container) {
+      console.error("Error: tree-container no encontrado");
+      return;
+    }
     container.innerHTML = svgText;
     const svg = container.querySelector('svg');
-    if (!svg) return;
+    if (!svg) {
+      console.error("Error: SVG no cargó");
+      return;
+    }
 
     // Animación de "dibujo" para todos los paths
     const allPaths = Array.from(svg.querySelectorAll('path'));
@@ -54,7 +60,7 @@ fetch('Img/treelove.svg')
       path.classList.add('animated-heart');
     });
   })
-  .catch(err => console.error("Error loading SVG:", err));
+  .catch(err => console.error("Error al cargar SVG:", err));
 
 function getURLParam(name) {
   const url = new URL(window.location.href);
@@ -93,8 +99,11 @@ function showDedicationText() {
   }
 
   const container = document.getElementById('dedication-text');
-  if (!container) return;
-  
+  if (!container) {
+    console.error("Error: dedication-text no encontrado");
+    return;
+  }
+
   container.innerHTML = "";
   let i = 0;
 
@@ -106,17 +115,18 @@ function showDedicationText() {
       let delay = text.charAt(i - 1) === '\n' ? 200 : 30;
       setTimeout(type, delay);
     } else {
+      console.log("Texto completado");
       showSignature();
     }
   }
-  
+
   type();
 }
 
 function showSignature() {
   const dedication = document.getElementById('dedication-text');
   if (!dedication) return;
-  
+
   let signature = document.getElementById('signature');
   if (!signature) {
     signature = document.createElement('div');
@@ -124,7 +134,7 @@ function showSignature() {
     signature.className = 'signature';
     dedication.appendChild(signature);
   }
-  
+
   let firma = getURLParam('firma');
   signature.textContent = firma ? decodeURIComponent(firma) : "Con amor, ALL";
   signature.classList.add('visible');
@@ -132,8 +142,11 @@ function showSignature() {
 
 function startFloatingObjects() {
   const container = document.getElementById('floating-objects');
-  if (!container) return;
-  
+  if (!container) {
+    console.error("Error: floating-objects no encontrado");
+    return;
+  }
+
   let count = 0;
   function spawn() {
     let el = document.createElement('div');
@@ -151,7 +164,9 @@ function startFloatingObjects() {
       el.style.opacity = 0.2;
     }, 30);
 
-    setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, duration + 2000);
+    setTimeout(() => {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }, duration + 2000);
 
     if (count++ < 100) setTimeout(spawn, 400);
   }
@@ -160,10 +175,10 @@ function startFloatingObjects() {
 
 function showCountdown() {
   const container = document.getElementById('countdown');
-  if (!container) return;
-
-  let startParam = getURLParam('start');
-  let startDate = startParam ? new Date(startParam + 'T00:00:00') : new Date('2024-08-03T00:00:00');
+  if (!container) {
+    console.error("Error: countdown no encontrado");
+    return;
+  }
 
   container.innerHTML = "Nos conocimos desde hace <b>8 años</b> 💖";
   container.classList.add('visible');
@@ -196,7 +211,7 @@ function playBackgroundMusic() {
   }
 
   audio.volume = 0.7;
-  
+
   btn.onclick = () => {
     if (audio.paused) {
       audio.play();
