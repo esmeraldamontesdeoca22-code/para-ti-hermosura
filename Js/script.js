@@ -1,23 +1,37 @@
 // © Zero - Código libre no comercial
 
+console.log("✅ Script iniciado");
+
 // Cargar el SVG y animar los corazones
 fetch('Img/treelove.svg')
-  .then(res => res.text())
+  .then(res => {
+    console.log("📦 SVG response:", res.status);
+    return res.text();
+  })
   .then(svgText => {
+    console.log("✅ SVG text received, length:", svgText.length);
+    
     const container = document.getElementById('tree-container');
+    console.log("🔍 tree-container existe:", !!container);
+    
     if (!container) {
-      console.error("Error: tree-container no encontrado");
+      console.error("❌ ERROR: tree-container no existe en el HTML");
       return;
     }
+    
     container.innerHTML = svgText;
     const svg = container.querySelector('svg');
+    console.log("✅ SVG cargado en el DOM");
+    
     if (!svg) {
-      console.error("Error: SVG no cargó");
+      console.error("❌ ERROR: No hay SVG dentro del contenedor");
       return;
     }
 
     // Animación de "dibujo" para todos los paths
     const allPaths = Array.from(svg.querySelectorAll('path'));
+    console.log("📍 Total paths encontrados:", allPaths.length);
+    
     allPaths.forEach(path => {
       path.style.stroke = '#222';
       path.style.strokeWidth = '2.5';
@@ -28,8 +42,9 @@ fetch('Img/treelove.svg')
       path.style.transition = 'none';
     });
 
-    // Forzar reflow y luego animar
     setTimeout(() => {
+      console.log("⏱️ Iniciando animación de paths");
+      
       allPaths.forEach((path, i) => {
         path.style.transition = `stroke-dashoffset 1.2s cubic-bezier(.77,0,.18,1) ${i * 0.08}s, fill-opacity 0.5s ${0.9 + i * 0.08}s`;
         path.style.strokeDashoffset = 0;
@@ -41,12 +56,19 @@ fetch('Img/treelove.svg')
       });
 
       const totalDuration = 1200 + (allPaths.length - 1) * 80 + 500;
+      console.log("⏳ Duración total:", totalDuration, "ms");
+      
       setTimeout(() => {
+        console.log("🎬 Aplicando move-and-scale");
         svg.classList.add('move-and-scale');
         setTimeout(() => {
+          console.log("📝 INICIANDO TEXTO");
           showDedicationText();
+          console.log("✨ Iniciando pétalos");
           startFloatingObjects();
+          console.log("⏰ Mostrando countdown");
           showCountdown();
+          console.log("🎵 Iniciando música");
           playBackgroundMusic();
         }, 1200);
       }, totalDuration);
@@ -56,11 +78,13 @@ fetch('Img/treelove.svg')
       const style = el.getAttribute('style') || el.getAttribute('fill') || '';
       return style.includes('#FC6F58') || style.includes('#C1321F');
     });
+    console.log("❤️ Corazones encontrados:", heartPaths.length);
+    
     heartPaths.forEach(path => {
       path.classList.add('animated-heart');
     });
   })
-  .catch(err => console.error("Error al cargar SVG:", err));
+  .catch(err => console.error("❌ Error fatal:", err));
 
 function getURLParam(name) {
   const url = new URL(window.location.href);
@@ -68,6 +92,8 @@ function getURLParam(name) {
 }
 
 function showDedicationText() {
+  console.log("🔍 showDedicationText() llamada");
+  
   let rawText = getURLParam('text');
   let text = "";
 
@@ -99,33 +125,51 @@ function showDedicationText() {
   }
 
   const container = document.getElementById('dedication-text');
+  console.log("📝 Container encontrado:", !!container);
+  console.log("📝 Texto a mostrar (primeros 50 chars):", text.substring(0, 50));
+  
   if (!container) {
-    console.error("Error: dedication-text no encontrado");
+    console.error("❌ ERROR CRÍTICO: dedication-text no existe en el HTML");
     return;
   }
 
   container.innerHTML = "";
+  container.style.opacity = "1";
+  container.style.visibility = "visible";
+  
   let i = 0;
 
   function type() {
     if (i < text.length) {
-      container.textContent += text.charAt(i);
+      const char = text.charAt(i);
+      container.textContent += char;
       i++;
+      
+      if (i % 10 === 0) {
+        console.log(`✍️ Escribiendo... ${i}/${text.length}`);
+      }
+      
       window.scrollTo(0, document.body.scrollHeight);
-      let delay = text.charAt(i - 1) === '\n' ? 200 : 30;
+      let delay = char === '\n' ? 200 : 30;
       setTimeout(type, delay);
     } else {
-      console.log("Texto completado");
+      console.log("✅ TEXTO COMPLETADO");
       showSignature();
     }
   }
 
+  console.log("✍️ Comenzando a escribir...");
   type();
 }
 
 function showSignature() {
+  console.log("🖊️ showSignature() llamada");
+  
   const dedication = document.getElementById('dedication-text');
-  if (!dedication) return;
+  if (!dedication) {
+    console.error("❌ ERROR: dedication-text no existe");
+    return;
+  }
 
   let signature = document.getElementById('signature');
   if (!signature) {
@@ -133,17 +177,21 @@ function showSignature() {
     signature.id = 'signature';
     signature.className = 'signature';
     dedication.appendChild(signature);
+    console.log("✅ Signature creada");
   }
 
   let firma = getURLParam('firma');
   signature.textContent = firma ? decodeURIComponent(firma) : "Con amor, ALL";
   signature.classList.add('visible');
+  console.log("✍️ Firma mostrada:", signature.textContent);
 }
 
 function startFloatingObjects() {
+  console.log("✨ startFloatingObjects() llamada");
+  
   const container = document.getElementById('floating-objects');
   if (!container) {
-    console.error("Error: floating-objects no encontrado");
+    console.error("❌ ERROR: floating-objects no existe");
     return;
   }
 
@@ -171,20 +219,26 @@ function startFloatingObjects() {
     if (count++ < 100) setTimeout(spawn, 400);
   }
   spawn();
+  console.log("✅ Pétalos iniciados");
 }
 
 function showCountdown() {
+  console.log("⏰ showCountdown() llamada");
+  
   const container = document.getElementById('countdown');
   if (!container) {
-    console.error("Error: countdown no encontrado");
+    console.error("❌ ERROR: countdown no existe");
     return;
   }
 
   container.innerHTML = "Nos conocimos desde hace <b>8 años</b> 💖";
   container.classList.add('visible');
+  console.log("✅ Countdown mostrado");
 }
 
 function playBackgroundMusic() {
+  console.log("🎵 playBackgroundMusic() llamada");
+  
   let audio = document.getElementById('bg-music');
   if (!audio) {
     audio = document.createElement('audio');
@@ -196,6 +250,9 @@ function playBackgroundMusic() {
   if (musicaParam) {
     musicaParam = decodeURIComponent(musicaParam).replace(/[^a-zA-Z0-9._-]/g, '');
     audio.src = 'Music/' + musicaParam;
+    console.log("🎵 Música asignada:", audio.src);
+  } else {
+    console.log("🎵 No hay parámetro de música");
   }
 
   let btn = document.getElementById('music-btn');
@@ -208,6 +265,7 @@ function playBackgroundMusic() {
     btn.style.zIndex = 1000;
     btn.textContent = '▶️ Música';
     document.body.appendChild(btn);
+    console.log("✅ Botón de música creado");
   }
 
   audio.volume = 0.7;
@@ -222,3 +280,5 @@ function playBackgroundMusic() {
     }
   };
 }
+
+console.log("✅ Script completamente cargado");
