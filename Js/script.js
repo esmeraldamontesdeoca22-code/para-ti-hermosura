@@ -42,7 +42,7 @@ fetch('Img/treelove.svg')
           startFloatingObjects();
           showCountdown();
           playBackgroundMusic();
-        }, 1200); 
+        }, 1200);
       }, totalDuration);
     }, 50);
 
@@ -53,7 +53,8 @@ fetch('Img/treelove.svg')
     heartPaths.forEach(path => {
       path.classList.add('animated-heart');
     });
-  });
+  })
+  .catch(err => console.error("Error loading SVG:", err));
 
 function getURLParam(name) {
   const url = new URL(window.location.href);
@@ -61,38 +62,61 @@ function getURLParam(name) {
 }
 
 function showDedicationText() {
-  let text = getURLParam('text');
-  if (!text) {
-    text = "ELY quiero decirte que:\n" +
+  let rawText = getURLParam('text');
+  let text = "";
+
+  if (!rawText) {
+    text = "ELY quiero decirte que:\n\n" +
            "Sé que a veces dices que estás bien, pero yo puedo notar cuando no lo estás…\n" +
            "No tienes que mentirme, mi amor, puedes confiar en mí.\n\n" +
            "Si estás cansada o algo te duele, ven aquí, a mi pecho,\n" +
-           "que conmigo no tienes que fingir nada.\n\n" +
-           "Te amo, mi hermoso sauce llorón.\n";
+           "que conmigo no tienes que fingir nada.\n" +
+           "Puedes ser tú, tal cual, sin miedo.\n\n" +
+           "No tienes que cargar todo sola,\n" +
+           "si sientes que todo se vuelve oscuro, quédate conmigo…\n" +
+           "como el mar cuando abraza la orilla, así quiero cuidarte,\n" +
+           "sin soltarte, sin dejarte caer.\n\n" +
+           "Porque de verdad me importas,\n" +
+           "y aunque no siempre tenga las palabras perfectas,\n" +
+           "sé que mi amor por ti es más grande cada día.\n" +
+           "Quiero estar contigo,\n" +
+           "en lo bueno, en lo difícil… en todo.\n\n" +
+           "Después de todo lo que te dije, necesito que esto te quede bien claro. Te amo. Y sí, te amo de verdad, no por decirlo bonito. No es una broma de YouTube jajajaj.\n\n" +
+           "Me importas muchísimo y te quiero en mi vida porque eres tú. Te quiero en mis días, en lo que pienso, en lo que siento. Y te amo por todo lo que eres y por lo que representas.\n\n" +
+           "Te amo, mi hermoso sauce llorón.\n" +
+           "Te quiero, mi pechomcha.\n" +
+           "Y te pienso siempre, my galaxy.\n\n" +
+           "Te valoro un montón, más de lo que a veces te digo. Incluso cuando tú dudas de ti misma, yo no dudo de lo que eres para mí. Para mí no eres cualquier persona, eres alguien que se volvió importante de verdad.\n\n" +
+           "Y sí, eres maravillosa, pero en lo real, no exagerado… en eso que se siente cuando estoy contigo o cuando pienso en ti.\n";
   } else {
-    text = decodeURIComponent(text).replace(/\\n/g, '\n');
+    text = decodeURIComponent(rawText).replace(/\\n/g, '\n');
   }
 
   const container = document.getElementById('dedication-text');
   if (!container) return;
-  container.classList.add('typing');
+  
+  container.innerHTML = "";
   let i = 0;
 
   function type() {
-    if (i <= text.length) {
-      container.textContent = text.slice(0, i);
+    if (i < text.length) {
+      container.textContent += text.charAt(i);
       i++;
-      setTimeout(type, text[i - 2] === '\n' ? 350 : 45);
+      window.scrollTo(0, document.body.scrollHeight);
+      let delay = text.charAt(i - 1) === '\n' ? 200 : 30;
+      setTimeout(type, delay);
     } else {
-      setTimeout(showSignature, 600);
+      showSignature();
     }
   }
+  
   type();
 }
 
 function showSignature() {
   const dedication = document.getElementById('dedication-text');
   if (!dedication) return;
+  
   let signature = document.getElementById('signature');
   if (!signature) {
     signature = document.createElement('div');
@@ -100,6 +124,7 @@ function showSignature() {
     signature.className = 'signature';
     dedication.appendChild(signature);
   }
+  
   let firma = getURLParam('firma');
   signature.textContent = firma ? decodeURIComponent(firma) : "Con amor, ALL";
   signature.classList.add('visible');
@@ -108,6 +133,7 @@ function showSignature() {
 function startFloatingObjects() {
   const container = document.getElementById('floating-objects');
   if (!container) return;
+  
   let count = 0;
   function spawn() {
     let el = document.createElement('div');
@@ -136,11 +162,9 @@ function showCountdown() {
   const container = document.getElementById('countdown');
   if (!container) return;
 
-  // Lógica de fechas (opcional si quieres usar los parámetros de la URL)
   let startParam = getURLParam('start');
-  let startDate = startParam ? new Date(startParam + 'T00:00:00') : new Date('2024-08-03T00:00:00'); 
+  let startDate = startParam ? new Date(startParam + 'T00:00:00') : new Date('2024-08-03T00:00:00');
 
-  // Por ahora dejamos el mensaje fijo que tenías, que es muy lindo
   container.innerHTML = "Nos conocimos desde hace <b>8 años</b> 💖";
   container.classList.add('visible');
 }
@@ -155,7 +179,7 @@ function playBackgroundMusic() {
 
   let musicaParam = getURLParam('musica');
   if (musicaParam) {
-    musicaParam = decodeURIComponent(musicaParam).replace(/[^a-zA-Z0-0._-]/g, '');
+    musicaParam = decodeURIComponent(musicaParam).replace(/[^a-zA-Z0-9._-]/g, '');
     audio.src = 'Music/' + musicaParam;
   }
 
